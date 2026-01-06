@@ -103,6 +103,7 @@ class FeedForward:
         return self.net1.backward(d_relu)
 
 class Block:
+    # Block model for Pythia class
     def __init__(self, d_model, max_len):
         self.ln1 = LayerNorm(d_model)
         self.attn = CausalSelfAttention(d_model, max_len)
