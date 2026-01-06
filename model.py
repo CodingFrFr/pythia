@@ -3,7 +3,7 @@ from layers import *
 
 class Pythia:
     def __init__(self, vocab_size_or_config, d_model=None, n_layer=None, max_len=None):
-        # Check if the first argument is a dictionary
+        # Check if the first argument is dict
         if isinstance(vocab_size_or_config, dict):
             config = vocab_size_or_config
             vocab_size = config['vocab_size']
@@ -57,13 +57,13 @@ class Pythia:
 
     def zero_grad(self):
         """Resets all gradient buffers to zero."""
-        # We iterate over the parameter registry to cleanly zero everything
+        # Iterate over parameter registry to zero everything
         for _, grad in self.collect_params():
             grad.fill(0)
 
     def forward(self, idx, targets=None):
-        # 1. Dynamic Context Cropping (The Fix)
-        # We derive max_len from the shape of the positional embeddings
+        # Dynamic Context Cropping
+        # Derive max_len from shape of the positional embeddings
         max_len = self.pos_emb.shape[0]
         
         # If input exceeds capacity, crop to the last 'max_len' tokens
@@ -113,7 +113,7 @@ class Pythia:
         for block in reversed(self.blocks):
             dx = block.backward(dx)
             
-        # 4. Backward Pass (Embeddings)
+        # Backward Pass (Embeddings)
         # Token Embeddings: Accumulate gradients for repeated tokens
         np.add.at(self.d_token_emb, idx, dx)
         
