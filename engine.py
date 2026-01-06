@@ -4,7 +4,7 @@ class DeltaOptimizer:
     def __init__(self, params, lr=0.005):
         """
         params: List of tuples (param_array, grad_array)
-        This eliminates dictionary lookups entirely.
+        Eliminates dict lookups.
         """
         self.params = params
         self.lr = np.float32(lr)
@@ -23,24 +23,24 @@ class DeltaOptimizer:
         lr = np.float32(current_lr) if current_lr is not None else self.lr
         t_idx = self.t
         
-        # Optimization: Pre-calculate bias corrections
+        # Pre-calculate bias corrections
         # Using float32 casting to prevent upcasting
         bias_m = np.float32(1.0) / (np.float32(1.0) - self.beta1 ** t_idx)
         bias_v = np.float32(1.0) / (np.float32(1.0) - self.beta2 ** t_idx)
 
         # The Hot Loop: Iterate over list (No dicts, no strings)
         for i, (param, grad) in enumerate(self.params):
-            # 1. Weight Decay
+            # Weight Decay
             g = grad + self.wd * param
             
-            # 2. Gradient Clipping
+            # Gradient Clipping
             g = np.clip(g, -1.0, 1.0)
 
-            # 3. Update Moments
+            # Update Moments
             self.m[i] = self.beta1 * self.m[i] + (1.0 - self.beta1) * g
             self.v[i] = self.beta2 * self.v[i] + (1.0 - self.beta2) * (g**2)
 
-            # 4. Apply Update (In-Place)
+            # Apply Update (In-Place)
             m_hat = self.m[i] * bias_m
             v_hat = self.v[i] * bias_v
             
