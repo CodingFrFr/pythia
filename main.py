@@ -10,8 +10,8 @@ from engine import DeltaOptimizer
 from model import Pythia
 
 def main():
-    Console = ConsoleUI()
-    Console.boot_sequence(4, 0.3)
+    Console = ConsoleUI() # sets up ConsoleUI [NOT required]
+    Console.boot_sequence(4, 0.3) # [NOT required]
     
     try:
         with open('input.txt', 'r', encoding='utf-8') as f: full_text = f.read() * 10
@@ -21,14 +21,14 @@ def main():
     tokenizer = SimpleTokenizer(full_text)
     data_ids = np.array(tokenizer.encode(full_text))
     
-    # 2. Speed Config (Lightweight)
+    # Config (Lightweight)
     BATCH_SIZE = 16
     BLOCK_SIZE = 64
     D_MODEL = 48
     N_LAYER = 3
     STEPS = 500
 
-    # 3. Init Model & Optimizer
+    # Init Model & Optimizer
     model = Pythia(tokenizer.vocab_size, D_MODEL, N_LAYER, BLOCK_SIZE)
     optimizer = DeltaOptimizer(model.collect_params(), lr=0.005)
 
@@ -49,8 +49,8 @@ def main():
     for step in range(STEPS):
         xb, yb = get_batch()
         loss = model.train_step(xb, yb)
-        time.sleep(0.001) # Letting the server breathe
-        # Estamating remaining time
+        time.sleep(0.001) # Letting the server breathe [only if you're not running locally]
+        # Estimating remaining time
         elapsed = time.time() - start_time
         s_per_step = elapsed / (step + 1)
         remaining = (STEPS - step) * s_per_step
@@ -60,7 +60,7 @@ def main():
     total_time = (time.time() - start_time) / 60
     print(f"\n[SUCCESS] Training Complete in {total_time:.1f} minutes.")
     
-    # --- Chat Mode ---
+    # Chat Mode
     Console.clear()
     print("Pythia is ready. Type '/clear' or 'exit'.")
     
